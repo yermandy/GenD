@@ -39,7 +39,7 @@ from PIL import Image
 from src.hf.modeling_gend import GenD
 
 # Other models can be found in https://huggingface.co/collections/yermandy/gend:
-# -**** yermandy/GenD_CLIP_L_14
+# - yermandy/GenD_CLIP_L_14
 # - yermandy/GenD_PE_L
 # - yermandy/GenD_DINOv3_L
 model = GenD.from_pretrained("yermandy/GenD_CLIP_L_14")
