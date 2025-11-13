@@ -1,0 +1,37 @@
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+ignore = [
+    "C901", # complex condition
+    "E501", # line too long
+    "F401", # imported but unused
+    "F403", # from module import * used; unable to detect undefined names
+    "F405", # name may be undefined, or defined from star imports: module
+    "E741", # ambiguous variable name
+]
+
+select = [
+    "C", # flake8-comprehensions
+    "E", "W", # pycodestyle
+    "F", # pyflakes
+    "I", # isort
+]
+
+[tool.ruff.lint.isort]
+force-to-top = ["autoroot", "autorootcwd"]
+
+[tool.ruff.lint.per-file-ignores]
+"**/__init__.py" = ["E402"]
+
+[tool.pyright]
+exclude = [
+    "**/__pycache__",
+    "wandb",
+    "datasets",
+    "outputs",
+    "runs",
+    "tmp",
+    "logs",
+]
+typeCheckingMode = "off"
