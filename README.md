@@ -24,9 +24,7 @@ This example shows how to run inference with the pretrained GenD model from Hugg
 ``` bash
 conda create --name GenD python=3.12 uv -y
 conda activate GenD
-uv pip install torch==2.8.0
-uv pip install torchvision==0.23.0
-uv pip install transformers==4.56.2
+uv pip install torch==2.8.0 torchvision==0.23.0 transformers==4.56.2
 ```
 
 ### Inference with transformers
@@ -38,7 +36,7 @@ from PIL import Image
 
 from src.hf.modeling_gend import GenD
 
-# Other models can be found in https://huggingface.co/collections/yermandy/gend:
+# Other models can be found in https://huggingface.co/collections/yermandy/gend
 # - yermandy/GenD_CLIP_L_14
 # - yermandy/GenD_PE_L
 # - yermandy/GenD_DINOv3_L
