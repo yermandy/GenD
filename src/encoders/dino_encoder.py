@@ -1,7 +1,12 @@
+from typing import TYPE_CHECKING
+
 import torch
 import torch.nn as nn
 from PIL import Image
-from transformers import AutoImageProcessor, AutoModel, Dinov2Model, Dinov2WithRegistersModel
+from transformers import AutoImageProcessor, AutoModel
+
+if TYPE_CHECKING:
+    from transformers import Dinov2Model, Dinov2WithRegistersModel, DINOv3ViTModel
 
 
 class DINOEncoder(nn.Module):
@@ -15,7 +20,7 @@ class DINOEncoder(nn.Module):
         super().__init__()
 
         self._preprocess = AutoImageProcessor.from_pretrained(model_name)
-        self.backbone: Dinov2Model | Dinov2WithRegistersModel = AutoModel.from_pretrained(model_name)
+        self.backbone: Dinov2Model | Dinov2WithRegistersModel | DINOv3ViTModel = AutoModel.from_pretrained(model_name)
         self.merge_cls_token_with_patches = merge_cls_token_with_patches
 
         self.features_dim = self.backbone.config.hidden_size
