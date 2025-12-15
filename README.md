@@ -56,13 +56,13 @@ print(probs)
 
 ## Inference using Gradio UI
 
-We also provide a Gradio-based web UI for inference, install all dependencies as described in the [Training](#training) section, then run:
+We provide a Gradio-based web UI for inference, install all dependencies as described in the [Training](#training) section, then run:
 
 ``` bash
 python app/run.py
 ```
 
-<video controls src="media/gradio.mov" title="Title"></video>
+<video controls src="media/gradio.mp4" title="Title"></video>
 
 ## Training
 
