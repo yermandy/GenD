@@ -54,6 +54,16 @@ probs = logits.softmax(dim=-1)
 print(probs)
 ```
 
+## Inference using Gradio UI
+
+We also provide a Gradio-based web UI for inference, install all dependencies as described in the [Training](#training) section, then run:
+
+``` bash
+python app/run.py
+```
+
+<video controls src="media/gradio.mov" title="Title"></video>
+
 ## Training
 
 ### Set up environment
