@@ -62,7 +62,7 @@ We provide a Gradio-based web UI for inference, install all dependencies as desc
 python app/run.py
 ```
 
-<video controls src="media/gradio.mp4" title="Title"></video>
+![gradio-demo-app](media/gradio.png)
 
 ## Training
 
