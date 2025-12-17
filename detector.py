@@ -1,3 +1,4 @@
+# %%
 import argparse
 import heapq
 import os
@@ -6,6 +7,7 @@ from concurrent.futures import ThreadPoolExecutor
 from glob import glob
 
 import cv2
+import imageio.v3 as iio
 import numpy as np
 from tqdm import tqdm
 
@@ -69,21 +71,20 @@ def get_video_frames_generator(
     num_frames=32,
     mode="at_least",
 ):
-    video = cv2.VideoCapture(source_path)
-    if not video.isOpened():
-        print(f"Warning: Video {source_path} cannot be opened!")
+    try:
+        props = iio.improps(source_path, plugin="pyav")
+        video_frames = props.shape[0]
+    except Exception as e:
+        print(f"Warning: Video {source_path} cannot be opened! {e}")
         return
 
-    video_frames = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
-
     if mask_path is not None:
-        mask_video = cv2.VideoCapture(mask_path)
-
-        if not mask_video.isOpened():
-            print(f"Warning: Mask video {mask_path} cannot be opened!")
+        try:
+            mask_props = iio.improps(mask_path, plugin="pyav")
+            mask_frames = mask_props.shape[0]
+        except Exception as e:
+            print(f"Warning: Mask video {mask_path} cannot be opened! {e}")
             return
-
-        mask_frames = int(mask_video.get(cv2.CAP_PROP_FRAME_COUNT))
 
         if video_frames != mask_frames:
             print(
@@ -92,11 +93,7 @@ def get_video_frames_generator(
 
         total_frames = min(video_frames, mask_frames)
     else:
-        mask_video = None
         total_frames = video_frames
-
-    if not video.isOpened():
-        raise Exception(f"Could not open video at {source_path}")
 
     # Get the mode
     if mode == "fixed_num_frames":
@@ -112,32 +109,25 @@ def get_video_frames_generator(
 
     # Iterate through the selected frame IDs
     for frame_id in frame_ids:
-        # Set the video capture position to the desired frame
-        video.set(cv2.CAP_PROP_POS_FRAMES, frame_id)
-        success, frame = video.read()
+        try:
+            frame_rgb = iio.imread(source_path, index=frame_id, plugin="pyav")
+            frame = cv2.cvtColor(frame_rgb, cv2.COLOR_RGB2BGR)
+        except Exception as e:
+            print(f"Warning: Failed to read frame {frame_id} of {source_path}. Skipping. {e}")
+            continue
 
-        if mask_video is not None:
-            mask_video.set(cv2.CAP_PROP_POS_FRAMES, frame_id)
-            success_mask, mask = mask_video.read()
-            if not success_mask:
-                print(f"Warning: Failed to read mask frame {frame_id} of {mask_path}. Skipping.")
+        if mask_path is not None:
+            try:
+                mask_rgb = iio.imread(mask_path, index=frame_id, plugin="pyav")
+                mask = cv2.cvtColor(mask_rgb, cv2.COLOR_RGB2BGR)
+            except Exception as e:
+                print(f"Warning: Failed to read mask frame {frame_id} of {mask_path}. Skipping. {e}")
                 continue
 
             yield frame, frame_id, mask
 
         else:
-            # Check if the frame was successfully read
-            if not success:
-                print(f"Warning: Failed to read frame {frame_id} of {source_path}. Skipping.")
-                continue
-
             yield frame, frame_id, None
-
-    # Release the video capture object
-    video.release()
-
-    if mask_video is not None:
-        mask_video.release()
 
 
 def align_face(
@@ -364,9 +354,11 @@ def process_image(
     else:
         print(f"Processing {source_path}")
 
-    img = cv2.imread(source_path)
-    if img is None:
-        print(f"Failed to read image {source_path}")
+    try:
+        img_rgb = iio.imread(source_path)
+        img = cv2.cvtColor(img_rgb, cv2.COLOR_RGB2BGR)
+    except Exception as e:
+        print(f"Failed to read image {source_path}: {e}")
         return None
 
     try:
@@ -476,9 +468,15 @@ def process_mixed_types(
                 print(f"Error processing video {source_path}: {e}")
         else:
             try:
+                image_output_path = output_path
+                # .../image123.jpg -> .../image123/image123.jpg
+                img_name, img_extension = os.path.basename(image_output_path).split(".")
+                image_output_path = os.path.join(
+                    os.path.dirname(image_output_path), img_name, f"{img_name}.{img_extension}"
+                )
                 return process_image(
                     source_path,
-                    output_path,
+                    image_output_path,
                     model,
                     scale=scale,
                     target_size=target_size,
