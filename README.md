@@ -156,10 +156,11 @@ We manage links to files using `src/utils/files.py`.
 ### Cite
 
 ``` bibtex
-@article{yermakov2025deepfake,
-  title={Deepfake Detection that Generalizes Across Benchmarks},
-  author={Yermakov, Andrii and Cech, Jan and Matas, Jiri and Fritz, Mario},
-  journal={arXiv preprint arXiv:2508.06248},
-  year={2025}
+@InProceedings{GenD,
+  author    = {Yermakov, Andrii and Cech, Jan and Matas, Jiri and Fritz, Mario},
+  title     = {Deepfake Detection that Generalizes Across Benchmarks},
+  booktitle = {Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision (WACV)},
+  month     = {March},
+  year      = {2026},
 }
 ```
